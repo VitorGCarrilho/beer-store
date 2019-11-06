@@ -1,5 +1,6 @@
 package com.vcarrilho.beerstore.error;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -42,8 +43,17 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    private ErrorResponse.ApiError toApiError(String code, Locale locale) {
-        String message = apiErrorMessageSource.getMessage(code, null, NO_MESSAGE_AVAILABLE, locale);
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException invalidFormatException, Locale locale) {
+        final String errorCode = "beers-generic-1";
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        final ErrorResponse errorResponse = ErrorResponse.of(status, toApiError(errorCode, locale, invalidFormatException.getValue()));
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    private ErrorResponse.ApiError toApiError(String code, Locale locale, Object... values) {
+        String message = apiErrorMessageSource.getMessage(code, values, NO_MESSAGE_AVAILABLE, locale);
         return new ErrorResponse.ApiError(code, message);
     }
 
