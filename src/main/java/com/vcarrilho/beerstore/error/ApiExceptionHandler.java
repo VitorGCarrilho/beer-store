@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,8 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApiExceptionHandler {
 
-    public static final String NO_MESSAGE_AVAILABLE = "No message available";
     private static final Logger LOG = LoggerFactory.getLogger(ApiExceptionHandler.class);
+    private static final String NO_MESSAGE_AVAILABLE = "No message available";
 
     private final MessageSource apiErrorMessageSource;
 
@@ -47,7 +48,7 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException invalidFormatException, Locale locale) {
         final String errorCode = "beers-generic-1";
         final HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -66,9 +67,9 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(status).body(errorResponse);
     }
 
-    private ErrorResponse.ApiError toApiError(String code, Locale locale, Object... values) {
+    private final ErrorResponse.ApiError toApiError(String code, Locale locale, Object... values) {
         String message = apiErrorMessageSource.getMessage(code, values, NO_MESSAGE_AVAILABLE, locale);
         return new ErrorResponse.ApiError(code, message);
     }
-
 }
+
