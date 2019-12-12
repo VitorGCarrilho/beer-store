@@ -2,6 +2,8 @@ package com.vcarrilho.beerstore.error;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 public class ApiExceptionHandler {
 
     public static final String NO_MESSAGE_AVAILABLE = "No message available";
+    private static final Logger LOG = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
     private final MessageSource apiErrorMessageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -50,6 +54,16 @@ public class ApiExceptionHandler {
         final ErrorResponse errorResponse = ErrorResponse.of(status, toApiError(errorCode, locale, invalidFormatException.getValue()));
 
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception exception, Locale locale) {
+        LOG.error("m=handleException message=Error not expected", exception);
+        final String errorCode = "error-1";
+        final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        final ErrorResponse errorResponse = ErrorResponse.of(status, toApiError(errorCode, locale));
+
+        return ResponseEntity.status(status).body(errorResponse);
     }
 
     private ErrorResponse.ApiError toApiError(String code, Locale locale, Object... values) {
