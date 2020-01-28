@@ -13,3 +13,10 @@ Acessar maquina via ssh
 ```
 ssh -i key/beerstore_key ec2-user@100.26.251.111
 ```
+
+Para rodar o terraform
+```
+ terraform init
+ terraform plan
+ terraform apply -var="password=yourSecretPasswordHere"
+```

@@ -10,3 +10,15 @@ resource "aws_security_group" "allow_ssh" {
   }
 
 }
+
+resource "aws_security_group" "database_security_group" {
+  vpc_id = "${aws_vpc.main.id}"
+  name = "database_security_group"
+
+  ingress {
+    from_port = 5432
+    protocol = "tcp"
+    to_port = 5432
+    self = true
+  }
+}

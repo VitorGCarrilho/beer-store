@@ -5,3 +5,5 @@ variable "avability_zones" {
     "us-east-1c"
   ]
 }
+
+variable "password" {}
