@@ -7,3 +7,5 @@ variable "avability_zones" {
 }
 
 variable "password" {}
+
+variable "my_public_ip" {}
