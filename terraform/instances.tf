@@ -11,7 +11,7 @@ resource "aws_instance" "instances" {
 
   subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 
-  vpc_security_group_ids = ["${aws_security_group.allow_ssh.id}", "${aws_security_group.allow_outbound.id}"]
+  vpc_security_group_ids = ["${aws_security_group.allow_ssh.id}", "${aws_security_group.allow_outbound.id}", "${aws_security_group.cluster_communication.id}"]
 
   tags = {
     Name = "vcarrilho-instances"
